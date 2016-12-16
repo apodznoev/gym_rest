@@ -1,0 +1,83 @@
+ext {
+	verJersey = '2.19'
+	verGuice = '4.0'
+	verSwagger = '1.5.9'
+	verHibernate = '5.1.0.Final'
+}
+
+apply plugin: 'java'
+apply plugin: 'war'
+apply plugin: 'jetty'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+
+task wrapper(type: Wrapper) {
+	gradleVersion = '2.13'
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	compile group: 'javax.servlet', name: 'javax.servlet-api', version: '3.1.0'
+	compile group: 'javax.ws.rs', name: 'javax.ws.rs-api', version: '2.0.1'
+
+	compile group: 'com.google.inject', name: 'guice', version: verGuice
+	compile group: 'com.google.inject.extensions', name: 'guice-servlet', version: verGuice
+	compile group: 'com.google.inject.extensions', name: 'guice-persist', version: verGuice
+	compile group: 'com.squarespace.jersey2-guice', name: 'jersey2-guice', version: '0.10'
+	compile group: 'org.glassfish.jersey.containers', name: 'jersey-container-servlet', version: verJersey
+	compile group: 'org.glassfish.jersey.core', name: 'jersey-server', version: verJersey
+	compile group: 'org.glassfish.jersey.media', name: 'jersey-media-json-jackson', version: verJersey
+	compile group: 'io.swagger', name: 'swagger-jersey2-jaxrs', version: verSwagger
+	compile group: 'io.swagger', name: 'swagger-jaxrs', version: verSwagger
+	compile group: 'org.hibernate', name: 'hibernate-core', version: verHibernate
+	compile group: 'org.hibernate', name: 'hibernate-entitymanager', version: verHibernate
+	compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.13'
+	compile group: 'org.hsqldb', name: 'hsqldb', version: '2.3.4'
+
+	testCompile group: 'junit', name: 'junit', version:'4.12'
+	testCompile (group: 'org.mockito', name: 'mockito-core', version: '1.10.19') {
+		// https://stackoverflow.com/questions/7869711/getting-nosuchmethoderror-org-hamcrest-matcher-describemismatch-when-running
+		exclude(module: 'org.hamcrest')
+	}
+	testCompile group: 'com.jayway.restassured', name: 'rest-assured', version:'2.9.0'
+}
+
+sourceSets {
+	main {
+		resources {
+			srcDir 'src/main/resources'
+			srcDir 'src/main/webapp'
+		}
+	}
+}
+
+war {
+	archiveName = "root.war"
+}
+
+/* Change context path (base url), otherwise defaults to name of project */
+jettyRun.contextPath = ''
+jettyRunWar.contextPath = ''
+
+test {
+	exclude '**/*RestIntegrationTest*'
+}
+
+task restIntegrationTest(type: Test) {
+	include '**/*RestIntegrationTest*'
+	doFirst {
+		jettyRun.httpPort = 8080    // Port for test
+		jettyRun.daemon = true
+		jettyRun.execute()
+	}
+	doLast {
+		jettyStop.stopPort = 8091   // Port for stop signal
+		jettyStop.stopKey = 'stopKey'
+		jettyStop.execute()
+	}
+}
+
+check.dependsOn restIntegrationTest
