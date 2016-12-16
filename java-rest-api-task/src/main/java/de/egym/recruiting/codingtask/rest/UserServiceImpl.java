@@ -6,6 +6,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.ws.rs.NotFoundException;
 
+import org.apache.commons.lang3.StringUtils;
+import org.hsqldb.lib.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,10 +33,7 @@ public class UserServiceImpl implements UserService {
 	@Nonnull
 	@Override
 	public List<User> indexUsers(@Nullable String lastNamePrefix) {
-		log.debug("Get all users having the last name: %1", lastNamePrefix);
-		if(lastNamePrefix == null)
-			return userDao.findAll();
-
+		log.debug("Get all users having the last name: {}", lastNamePrefix);
 		return userDao.findByLastNamePrefix(lastNamePrefix);
 	}
 

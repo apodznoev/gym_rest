@@ -14,6 +14,7 @@ import com.google.inject.persist.Transactional;
 
 import de.egym.recruiting.codingtask.jpa.domain.User;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -48,7 +49,20 @@ public class UserDaoImpl extends AbstractBaseDao<User> implements UserDao {
 	}
 
 	@Override
-	public List<User> findByLastNamePrefix(@NotNull String lastNamePrefix) {
-		return null;
+	public List<User> findByLastNamePrefix(@Nullable String lastNamePrefix) {
+		if(StringUtils.isEmpty(lastNamePrefix))
+			return findAll();
+
+		lastNamePrefix = lastNamePrefix.toLowerCase();
+
+		try {
+			//noinspection unchecked
+			return (List<User>) getEntityManager()
+					.createQuery("SELECT u FROM User u WHERE LOWER(u.lastName) LIKE :lastNamePrefix")
+					.setParameter("lastNamePrefix", lastNamePrefix + "%")
+					.getResultList();
+		} catch (NoResultException | NonUniqueResultException e) {
+			return Collections.emptyList();
+		}
 	}
 }

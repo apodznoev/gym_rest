@@ -63,6 +63,20 @@ public class TestData {
 
 			userDao.create(testUser2);
 		}
+
+		if (userDao.findByEmail("bon@bonjovi.com") == null) {
+			User testUser3 = new User();
+			testUser3.setEmail("bon@bonjovi.com");
+			testUser3.setFirstName("John");
+			testUser3.setLastName("Bongiovi");
+			try {
+				testUser3.setBirthday(DateUtils.parseDate("1962-03-02", "yyyy-MM-dd"));
+			} catch (ParseException e) {
+				// ignoring
+			}
+
+			userDao.create(testUser3);
+		}
 	}
 
 }

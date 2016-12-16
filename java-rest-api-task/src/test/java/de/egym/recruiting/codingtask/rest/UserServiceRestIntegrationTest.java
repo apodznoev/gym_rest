@@ -4,6 +4,7 @@ import static com.jayway.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.*;
 
 import org.apache.http.HttpStatus;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import de.egym.recruiting.codingtask.AbstractRestIntegrationTest;
@@ -13,6 +14,15 @@ public class UserServiceRestIntegrationTest extends AbstractRestIntegrationTest 
 	@Test
 	public void testIndexWithoutFilter() {
 		when().get("/api/v1/users").then().statusCode(HttpStatus.SC_OK).body("lastName", hasItems("Bond", "Mueller"));
+	}
+
+	@Test
+	public void testIndexWithPrefix() {
+		when().get("/api/v1/users?lastNamePrefix=bon").then().statusCode(HttpStatus.SC_OK).body("lastName",
+				Matchers.allOf(
+						Matchers.iterableWithSize(2),
+						Matchers.hasItems("Bond", "Bongiovi")
+				));
 	}
 
 	@Test

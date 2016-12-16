@@ -12,6 +12,7 @@ import com.google.inject.persist.Transactional;
 import com.google.inject.servlet.RequestParameters;
 import de.egym.recruiting.codingtask.jpa.domain.User;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiParam;
 
 @Transactional
 @Path("/api/v1/users")
@@ -29,7 +30,9 @@ public interface UserService {
     @Path("/")
     @Nonnull
     @Produces(MediaType.APPLICATION_JSON)
-    List<User> indexUsers(@Nullable @QueryParam(value = "lastNamePrefix") String lastNamePrefix);
+    List<User> indexUsers(@Nullable
+                          @ApiParam(value = "optional prefix used to filter by last name")//todo fix it in swagger-ui
+                          @QueryParam(value = "lastNamePrefix") String lastNamePrefix);
 
     /**
      * This method gets a single user from the database based on the users's id.
