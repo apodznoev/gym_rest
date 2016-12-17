@@ -1,19 +1,15 @@
 package de.egym.recruiting.codingtask.jpa.dao;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.google.inject.persist.Transactional;
+import de.egym.recruiting.codingtask.jpa.domain.User;
+import org.apache.commons.lang3.StringUtils;
+
 import javax.annotation.Nullable;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
-import javax.validation.constraints.NotNull;
-
-import org.apache.commons.lang3.StringUtils;
-
-import com.google.inject.Inject;
-import com.google.inject.Provider;
-import com.google.inject.persist.Transactional;
-
-import de.egym.recruiting.codingtask.jpa.domain.User;
-
 import java.util.Collections;
 import java.util.List;
 

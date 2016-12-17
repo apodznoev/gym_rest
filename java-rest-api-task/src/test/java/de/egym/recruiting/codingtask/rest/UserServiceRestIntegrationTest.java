@@ -1,13 +1,18 @@
 package de.egym.recruiting.codingtask.rest;
 
-import static com.jayway.restassured.RestAssured.*;
-import static org.hamcrest.Matchers.*;
-
+import de.egym.recruiting.codingtask.AbstractRestIntegrationTest;
+import de.egym.recruiting.codingtask.TestData;
 import org.apache.http.HttpStatus;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
-import de.egym.recruiting.codingtask.AbstractRestIntegrationTest;
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.RestAssured.when;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
 
 public class UserServiceRestIntegrationTest extends AbstractRestIntegrationTest {
 
@@ -33,5 +38,27 @@ public class UserServiceRestIntegrationTest extends AbstractRestIntegrationTest 
 	@Test
 	public void testGetByIdNotFound() {
 		when().get("/api/v1/users/12345").then().statusCode(HttpStatus.SC_NOT_FOUND);
+	}
+
+	@Test
+	public void testCreateUser() {
+		Map<String, String> user = new HashMap<>();
+		user.put("firstName","testName");
+		user.put("lastName","lastLastName");
+		user.put("email","fake@fake.com");
+		user.put("birthday","1990-05-31");
+		given().body(user).header("Content-Type","application/json")
+				.when().post("/api/v1/users/create").then().statusCode(HttpStatus.SC_OK);
+	}
+
+	@Test
+	public void testCreateUserDuplicate() {
+		Map<String, String> user = new HashMap<>();
+		user.put("firstName","testName");
+		user.put("lastName","lastLastName");
+		user.put("email", TestData.USER_1.getEmail());
+		user.put("birthday","1990-05-31");
+		given().body(user).header("Content-Type","application/json")
+				.when().post("/api/v1/users/create").then().statusCode(HttpStatus.SC_CONFLICT);
 	}
 }

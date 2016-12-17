@@ -1,13 +1,13 @@
 package de.egym.recruiting.codingtask.jpa.domain;
 
-import java.util.Date;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-
-import io.swagger.annotations.ApiModelProperty;
+import java.util.Date;
 
 
 @Entity
@@ -15,10 +15,13 @@ public class User extends AbstractEntity {
 
 	private static final long serialVersionUID = 1L;
 
+	@ApiModelProperty(required = true, value = "Non-empty name of user.", example = "John")
 	private String firstName;
 
+	@ApiModelProperty(required = true, value = "Non-empty last name of user.", example = "Connor")
 	private String lastName;
 
+	@ApiModelProperty(required = true, value = "Unique email address with pattern like xxx@yyy.zz", example = "test+allowed_Also@fake.com")
 	@Column(unique = true, nullable = false)
 	private String email;
 
@@ -54,7 +57,13 @@ public class User extends AbstractEntity {
 		this.email = email;
 	}
 
+	@JsonProperty
 	public void setBirthday(Date birthday) {
 		this.birthday = birthday;
+	}
+
+	@JsonIgnore
+	public void setBirthday(long birthday) {
+		this.birthday = new Date(birthday);
 	}
 }

@@ -1,21 +1,20 @@
 package de.egym.recruiting.codingtask.jpa.dao;
 
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.lang3.time.DateUtils;
-import org.hamcrest.*;
+import com.google.inject.Inject;
+import de.egym.recruiting.codingtask.AbstractIntegrationTest;
+import de.egym.recruiting.codingtask.TestData;
+import de.egym.recruiting.codingtask.Timing;
+import de.egym.recruiting.codingtask.UserMatcher;
+import de.egym.recruiting.codingtask.jpa.domain.User;
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.google.inject.Inject;
+import javax.persistence.PersistenceException;
+import java.util.List;
 
-import de.egym.recruiting.codingtask.AbstractIntegrationTest;
-import de.egym.recruiting.codingtask.jpa.domain.User;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static de.egym.recruiting.codingtask.TestsHelper.checkException;
+import static org.junit.Assert.*;
 
 public class UserDaoIntegrationTest extends AbstractIntegrationTest {
 
@@ -28,11 +27,7 @@ public class UserDaoIntegrationTest extends AbstractIntegrationTest {
 
         Assert.assertNotNull(user);
         Assert.assertNotNull(user.getId());
-        Assert.assertEquals("heinz@egym.de", user.getEmail());
-        Assert.assertEquals("Heinz", user.getFirstName());
-        Assert.assertEquals("Mueller", user.getLastName());
-        final Date expectedBirthday = DateUtils.parseDate("1983-02-01", "yyyy-MM-dd");
-        Assert.assertEquals(expectedBirthday, user.getBirthday());
+        assertThat(user, UserMatcher.copy(TestData.USER_1));
     }
 
     @Test
@@ -65,9 +60,7 @@ public class UserDaoIntegrationTest extends AbstractIntegrationTest {
         assertEquals(1, users.size());
 
         User bond = users.get(0);
-        assertEquals("James", bond.getFirstName());
-        assertEquals("Bond", bond.getLastName());
-        assertEquals("007@mi6.co.uk", bond.getEmail());
+        assertThat(bond, UserMatcher.copy(TestData.USER_2));
     }
 
     @Test
@@ -76,9 +69,7 @@ public class UserDaoIntegrationTest extends AbstractIntegrationTest {
         assertEquals(1, users.size());
 
         User bond = users.get(0);
-        assertEquals("James", bond.getFirstName());
-        assertEquals("Bond", bond.getLastName());
-        assertEquals("007@mi6.co.uk", bond.getEmail());
+        assertThat(bond, UserMatcher.copy(TestData.USER_2));
     }
 
     @Test
@@ -93,9 +84,7 @@ public class UserDaoIntegrationTest extends AbstractIntegrationTest {
         assertEquals(1, users.size());
 
         User mueller = users.get(0);
-        assertEquals("Heinz", mueller.getFirstName());
-        assertEquals("Mueller", mueller.getLastName());
-        assertEquals("heinz@egym.de", mueller.getEmail());
+        assertThat(mueller, UserMatcher.copy(TestData.USER_1));
     }
 
     @Test
@@ -103,8 +92,8 @@ public class UserDaoIntegrationTest extends AbstractIntegrationTest {
         final List<User> users = userDao.findByLastNamePrefix("bon");
         assertEquals(2, users.size());
 
-        assertThat(users, Matchers.hasItem(new UserMatcher("James", "Bond", "007@mi6.co.uk")));
-        assertThat(users, Matchers.hasItem(new UserMatcher("John", "Bongiovi", "bon@bonjovi.com")));
+        assertThat(users, Matchers.hasItem(UserMatcher.copy(TestData.USER_2)));
+        assertThat(users, Matchers.hasItem(UserMatcher.copy(TestData.USER_3)));
     }
 
     @Test
@@ -113,27 +102,21 @@ public class UserDaoIntegrationTest extends AbstractIntegrationTest {
         assertEquals(0, users.size());
     }
 
-    private static class UserMatcher extends TypeSafeMatcher<User> {
-        private final String firstName;
-        private final String lastName;
-        private final String email;
-
-        private UserMatcher(String firstName, String lastName, String email) {
-            this.firstName = firstName;
-            this.lastName = lastName;
-            this.email = email;
-        }
-
-        @Override
-        protected boolean matchesSafely(User item) {
-            return item.getFirstName().equals(firstName)
-                    && item.getLastName().equals(lastName)
-                    && item.getEmail().equals(email);
-        }
-
-        @Override
-        public void describeTo(Description description) {
-            description.appendValueList("", ", ", "", firstName, lastName, email);
+    @Test
+    public void testCreateUserNullFields() throws Exception {
+        User user = new User();
+        try {
+            checkException(() -> userDao.create(user), PersistenceException.class);
+            user.setFirstName("");
+            checkException(() -> userDao.create(user), PersistenceException.class);
+            user.setLastName("");
+            checkException(() -> userDao.create(user), PersistenceException.class);
+            user.setBirthday(Timing.getMillis());
+            checkException(() -> userDao.create(user), PersistenceException.class);
+            user.setEmail("");//todo I think it's better to add validation constraint to hibernate also
+            assertNotNull(userDao.create(user));
+        } finally {
+            userDao.delete(user);
         }
     }
 }

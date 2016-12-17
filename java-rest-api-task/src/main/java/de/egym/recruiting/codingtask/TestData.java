@@ -1,20 +1,21 @@
 package de.egym.recruiting.codingtask;
 
-import java.text.ParseException;
-import java.util.TimeZone;
-
+import com.google.inject.Inject;
+import com.google.inject.persist.Transactional;
+import de.egym.recruiting.codingtask.jpa.dao.UserDao;
+import de.egym.recruiting.codingtask.jpa.domain.User;
 import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.inject.Inject;
-import com.google.inject.persist.Transactional;
-
-import de.egym.recruiting.codingtask.jpa.dao.UserDao;
-import de.egym.recruiting.codingtask.jpa.domain.User;
+import java.text.ParseException;
+import java.util.TimeZone;
 
 @Transactional
 public class TestData {
+	public static User USER_1;
+	public static User USER_2;
+	public static User USER_3;
 
 	private static final Logger log = LoggerFactory.getLogger(TestData.class);
 
@@ -37,45 +38,45 @@ public class TestData {
 	private void insertTestUsers() {
 		log.debug("Inserting test users");
 		if (userDao.findByEmail("heinz@egym.de") == null) {
-			User testUser1 = new User();
-			testUser1.setEmail("heinz@egym.de");
-			testUser1.setFirstName("Heinz");
-			testUser1.setLastName("Mueller");
+			USER_1 = new User();
+			USER_1.setEmail("heinz@egym.de");
+			USER_1.setFirstName("Heinz");
+			USER_1.setLastName("Mueller");
 			try {
-				testUser1.setBirthday(DateUtils.parseDate("1983-02-01", "yyyy-MM-dd"));
+				USER_1.setBirthday(DateUtils.parseDate("1983-02-01", "yyyy-MM-dd"));
 			} catch (ParseException e) {
 				// ignoring
 			}
 
-			userDao.create(testUser1);
+			USER_1 = userDao.create(USER_1);
 		}
 
 		if (userDao.findByEmail("007@mi6.co.uk") == null) {
-			User testUser2 = new User();
-			testUser2.setEmail("007@mi6.co.uk");
-			testUser2.setFirstName("James");
-			testUser2.setLastName("Bond");
+			USER_2 = new User();
+			USER_2.setEmail("007@mi6.co.uk");
+			USER_2.setFirstName("James");
+			USER_2.setLastName("Bond");
 			try {
-				testUser2.setBirthday(DateUtils.parseDate("1968-03-02", "yyyy-MM-dd"));
+				USER_2.setBirthday(DateUtils.parseDate("1968-03-02", "yyyy-MM-dd"));
 			} catch (ParseException e) {
 				// ignoring
 			}
 
-			userDao.create(testUser2);
+			USER_2 = userDao.create(USER_2);
 		}
 
 		if (userDao.findByEmail("bon@bonjovi.com") == null) {
-			User testUser3 = new User();
-			testUser3.setEmail("bon@bonjovi.com");
-			testUser3.setFirstName("John");
-			testUser3.setLastName("Bongiovi");
+			USER_3 = new User();
+			USER_3.setEmail("bon@bonjovi.com");
+			USER_3.setFirstName("John");
+			USER_3.setLastName("Bongiovi");
 			try {
-				testUser3.setBirthday(DateUtils.parseDate("1962-03-02", "yyyy-MM-dd"));
+				USER_3.setBirthday(DateUtils.parseDate("1962-03-02", "yyyy-MM-dd"));
 			} catch (ParseException e) {
 				// ignoring
 			}
 
-			userDao.create(testUser3);
+			USER_3 = userDao.create(USER_3);
 		}
 	}
 

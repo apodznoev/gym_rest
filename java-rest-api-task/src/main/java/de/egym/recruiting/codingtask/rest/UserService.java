@@ -1,18 +1,15 @@
 package de.egym.recruiting.codingtask.rest;
 
-import java.util.List;
+import com.google.inject.persist.Transactional;
+import de.egym.recruiting.codingtask.jpa.domain.User;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiParam;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-
-import com.google.inject.persist.Transactional;
-
-import com.google.inject.servlet.RequestParameters;
-import de.egym.recruiting.codingtask.jpa.domain.User;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiParam;
+import java.util.List;
 
 @Transactional
 @Path("/api/v1/users")
@@ -31,7 +28,7 @@ public interface UserService {
     @Nonnull
     @Produces(MediaType.APPLICATION_JSON)
     List<User> indexUsers(@Nullable
-                          @ApiParam(value = "optional prefix used to filter by last name")//todo fix it in swagger-ui
+                          @ApiParam(value = "optional prefix used to filter by last name")
                           @QueryParam(value = "lastNamePrefix") String lastNamePrefix);
 
     /**
@@ -45,4 +42,10 @@ public interface UserService {
     @Nullable
     @Produces(MediaType.APPLICATION_JSON)
     User getUserById(@Nonnull @PathParam("userId") Long userId);
+
+    @POST
+    @Path("/create")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    User createUser(User newUser);
 }
