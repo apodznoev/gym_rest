@@ -1,11 +1,12 @@
-package de.egym.recruiting.codingtask.jpa;
+package de.egym.recruiting.codingtask.jpa.general;
 
 import com.google.inject.Singleton;
 import com.google.inject.persist.jpa.JpaPersistModule;
 import com.google.inject.servlet.ServletModule;
-
+import de.egym.recruiting.codingtask.jpa.dao.ExerciseDao;
 import de.egym.recruiting.codingtask.jpa.dao.UserDao;
-import de.egym.recruiting.codingtask.jpa.dao.UserDaoImpl;
+import de.egym.recruiting.codingtask.jpa.dao.impl.ExerciseDaoImpl;
+import de.egym.recruiting.codingtask.jpa.dao.impl.UserDaoImpl;
 
 public class JpaModule extends ServletModule {
 
@@ -23,5 +24,6 @@ public class JpaModule extends ServletModule {
 		bind(JpaPersistenceInitializer.class).asEagerSingleton();
 
 		bind(UserDao.class).to(UserDaoImpl.class).in(Singleton.class);
+		bind(ExerciseDao.class).to(ExerciseDaoImpl.class).in(Singleton.class);
 	}
 }

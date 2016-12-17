@@ -1,9 +1,10 @@
-package de.egym.recruiting.codingtask.rest;
+package de.egym.recruiting.codingtask.service;
 
 import de.egym.recruiting.codingtask.TestTiming;
 import de.egym.recruiting.codingtask.Timing;
 import de.egym.recruiting.codingtask.jpa.dao.UserDao;
 import de.egym.recruiting.codingtask.jpa.domain.User;
+import de.egym.recruiting.codingtask.rest.impl.UserServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;

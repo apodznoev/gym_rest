@@ -1,10 +1,12 @@
 package de.egym.recruiting.codingtask.dto;
 
+import de.egym.recruiting.codingtask.rest.general.RestExceptionMapper;
+
 /**
  * This Data Transfer Object (DTO) is used to pass error codes and error messages via the REST interface from the server to the client.
  * This DTO is sent to the client using a JSON format.
  *
- * @see de.egym.recruiting.codingtask.rest.RestExceptionMapper
+ * @see RestExceptionMapper
  */
 public class ErrorDto {
 

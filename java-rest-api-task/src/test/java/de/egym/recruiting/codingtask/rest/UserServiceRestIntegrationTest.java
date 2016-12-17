@@ -28,6 +28,9 @@ public class UserServiceRestIntegrationTest extends AbstractRestIntegrationTest 
 						Matchers.iterableWithSize(2),
 						Matchers.hasItems("Bond", "Bongiovi")
 				));
+
+		when().get("/api/v1/users?lastNamePrefix=asdfa").then().statusCode(HttpStatus.SC_OK).body("lastName",
+				Matchers.hasSize(0));
 	}
 
 	@Test
@@ -48,7 +51,7 @@ public class UserServiceRestIntegrationTest extends AbstractRestIntegrationTest 
 		user.put("email","fake@fake.com");
 		user.put("birthday","1990-05-31");
 		given().body(user).header("Content-Type","application/json")
-				.when().post("/api/v1/users/create").then().statusCode(HttpStatus.SC_OK);
+				.when().post("/api/v1/users/").then().statusCode(HttpStatus.SC_OK);
 	}
 
 	@Test
@@ -59,6 +62,6 @@ public class UserServiceRestIntegrationTest extends AbstractRestIntegrationTest 
 		user.put("email", TestData.USER_1.getEmail());
 		user.put("birthday","1990-05-31");
 		given().body(user).header("Content-Type","application/json")
-				.when().post("/api/v1/users/create").then().statusCode(HttpStatus.SC_CONFLICT);
+				.when().post("/api/v1/users/").then().statusCode(HttpStatus.SC_CONFLICT);
 	}
 }

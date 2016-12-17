@@ -29,6 +29,13 @@ public class User extends AbstractEntity {
 	@JsonFormat(pattern="yyyy-MM-dd")
 	private Date birthday;
 
+	public User() {
+	}
+
+	public User(long id) {
+		setId(id);
+	}
+
 	public String getFirstName() {
 		return firstName;
 	}

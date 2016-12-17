@@ -1,18 +1,12 @@
-package de.egym.recruiting.codingtask.jpa;
-
-import java.io.IOException;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+package de.egym.recruiting.codingtask.jpa.general;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.persist.PersistService;
 import com.google.inject.persist.UnitOfWork;
+
+import javax.servlet.*;
+import java.io.IOException;
 
 /**
  * Overrides Guice implementation to handle when the persistence service is already started.

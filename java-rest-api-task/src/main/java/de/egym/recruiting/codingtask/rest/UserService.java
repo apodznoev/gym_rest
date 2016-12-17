@@ -44,7 +44,7 @@ public interface UserService {
     User getUserById(@Nonnull @PathParam("userId") Long userId);
 
     @POST
-    @Path("/create")
+    @Path("/")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     User createUser(User newUser);

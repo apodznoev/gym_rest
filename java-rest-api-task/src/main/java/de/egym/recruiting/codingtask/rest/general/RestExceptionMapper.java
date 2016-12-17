@@ -1,17 +1,15 @@
-package de.egym.recruiting.codingtask.rest;
+package de.egym.recruiting.codingtask.rest.general;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import de.egym.recruiting.codingtask.dto.ErrorDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import de.egym.recruiting.codingtask.dto.ErrorDto;
 
 /**
  * Maps Java exceptions to HTTP error responses.

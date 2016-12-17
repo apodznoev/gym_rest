@@ -1,4 +1,4 @@
-package de.egym.recruiting.codingtask.jpa;
+package de.egym.recruiting.codingtask.jpa.general;
 
 import com.google.inject.Inject;
 import com.google.inject.persist.PersistService;

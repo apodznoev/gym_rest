@@ -1,9 +1,8 @@
 package de.egym.recruiting.codingtask;
 
 import com.google.inject.AbstractModule;
-
-import de.egym.recruiting.codingtask.jpa.JpaModule;
-import de.egym.recruiting.codingtask.rest.RestServiceModule;
+import de.egym.recruiting.codingtask.jpa.general.JpaModule;
+import de.egym.recruiting.codingtask.rest.general.RestServiceModule;
 
 public class RootModule extends AbstractModule {
 

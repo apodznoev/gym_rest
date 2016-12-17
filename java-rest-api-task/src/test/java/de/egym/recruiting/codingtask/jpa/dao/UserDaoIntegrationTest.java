@@ -115,8 +115,26 @@ public class UserDaoIntegrationTest extends AbstractIntegrationTest {
             checkException(() -> userDao.create(user), PersistenceException.class);
             user.setEmail("");//todo I think it's better to add validation constraint to hibernate also
             assertNotNull(userDao.create(user));
+            assertNotNull(userDao.findById(user.getId()));
+            assertEquals(4, userDao.findAll().size());
         } finally {
             userDao.delete(user);
         }
     }
+
+    @Test
+    public void testCreateUserEmailUnique() throws Exception {
+        User user = new User();
+        try {
+            user.setFirstName("Arnold");
+            user.setLastName("Schwarzenegger");
+            user.setBirthday(0);//
+            user.setEmail(TestData.USER_1.getEmail());
+            checkException(() -> userDao.create(user), PersistenceException.class);
+            assertEquals(3, userDao.findAll().size());
+        } finally {
+            userDao.delete(user);
+        }
+    }
+
 }
