@@ -55,20 +55,20 @@ public class ExerciseDaoIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     public void testFindForUser() {
-        List<Exercise> found = exerciseDao.findForUser(TestData.USER_1.getId(), null, null, null);
+        List<Exercise> found = exerciseDao.findForUser(TestData.USER_1.getId(), (Exercise.Type) null, null, null);
         assertEquals(2, found.size());
         assertThat(found, Matchers.hasItems(
                 ExerciseMatcher.copy(TestData.USER_1_EXERCISE_1),
                 ExerciseMatcher.copy(TestData.USER_1_EXERCISE_2)
         ));
 
-        found = exerciseDao.findForUser(TestData.USER_2.getId(), null, null, null);
+        found = exerciseDao.findForUser(TestData.USER_2.getId(), (Exercise.Type) null, null, null);
         assertEquals(1, found.size());
         assertThat(found, Matchers.hasItems(
                 ExerciseMatcher.copy(TestData.USER_2_EXERCISE_1)
         ));
 
-        found = exerciseDao.findForUser(TestData.USER_3.getId(), null, null, null);
+        found = exerciseDao.findForUser(TestData.USER_3.getId(), (Exercise.Type) null, null, null);
         assertTrue(found.isEmpty());
     }
 
@@ -81,56 +81,56 @@ public class ExerciseDaoIntegrationTest extends AbstractIntegrationTest {
         found = exerciseDao.findForUser(TestData.USER_1.getId(), Exercise.Type.OTHER, null, null);
         assertTrue(found.isEmpty());
 
-        found = exerciseDao.findForUser(TestData.USER_1.getId(), null, TIME_NOW, null);
+        found = exerciseDao.findForUser(TestData.USER_1.getId(), (Exercise.Type) null, TIME_NOW, null);
         assertTrue(found.isEmpty());
 
-        found = exerciseDao.findForUser(TestData.USER_1.getId(), null, TIME_NOW - TimeUnit.HOURS.toMillis(1), null);
+        found = exerciseDao.findForUser(TestData.USER_1.getId(), (Exercise.Type) null, TIME_NOW - TimeUnit.HOURS.toMillis(1), null);
         assertEquals(1, found.size());
         assertThat(found, Matchers.hasItems(ExerciseMatcher.copy(TestData.USER_1_EXERCISE_2)));
 
-        found = exerciseDao.findForUser(TestData.USER_1.getId(), null, TIME_NOW - TimeUnit.HOURS.toMillis(1) + 1, null);
+        found = exerciseDao.findForUser(TestData.USER_1.getId(), (Exercise.Type) null, TIME_NOW - TimeUnit.HOURS.toMillis(1) + 1, null);
         assertTrue(found.isEmpty());
 
-        found = exerciseDao.findForUser(TestData.USER_1.getId(), null, TIME_NOW - TimeUnit.HOURS.toMillis(1) - 1, null);
+        found = exerciseDao.findForUser(TestData.USER_1.getId(), (Exercise.Type) null, TIME_NOW - TimeUnit.HOURS.toMillis(1) - 1, null);
         assertEquals(1, found.size());
         assertThat(found, Matchers.hasItems(ExerciseMatcher.copy(TestData.USER_1_EXERCISE_2)));
 
-        found = exerciseDao.findForUser(TestData.USER_1.getId(), null, TIME_NOW - TimeUnit.HOURS.toMillis(3), null);
+        found = exerciseDao.findForUser(TestData.USER_1.getId(), (Exercise.Type) null, TIME_NOW - TimeUnit.HOURS.toMillis(3), null);
         assertEquals(2, found.size());
         assertThat(found, Matchers.hasItems(
                 ExerciseMatcher.copy(TestData.USER_1_EXERCISE_1),
                 ExerciseMatcher.copy(TestData.USER_1_EXERCISE_2))
         );
 
-        found = exerciseDao.findForUser(TestData.USER_1.getId(), null, TIME_NOW - TimeUnit.HOURS.toMillis(3) + 1, null);
+        found = exerciseDao.findForUser(TestData.USER_1.getId(), (Exercise.Type) null, TIME_NOW - TimeUnit.HOURS.toMillis(3) + 1, null);
         assertEquals(1, found.size());
         assertThat(found, Matchers.hasItems(
                 ExerciseMatcher.copy(TestData.USER_1_EXERCISE_2))
         );
 
-        found = exerciseDao.findForUser(TestData.USER_1.getId(), null, null, TIME_NOW);
+        found = exerciseDao.findForUser(TestData.USER_1.getId(), (Exercise.Type) null, null, TIME_NOW);
         assertEquals(2, found.size());
         assertThat(found, Matchers.hasItems(
                 ExerciseMatcher.copy(TestData.USER_1_EXERCISE_1),
                 ExerciseMatcher.copy(TestData.USER_1_EXERCISE_2))
         );
 
-        found = exerciseDao.findForUser(TestData.USER_1.getId(), null, null, TIME_NOW - TimeUnit.HOURS.toMillis(1) + 1);
+        found = exerciseDao.findForUser(TestData.USER_1.getId(), (Exercise.Type) null, null, TIME_NOW - TimeUnit.HOURS.toMillis(1) + 1);
         assertEquals(2, found.size());
         assertThat(found, Matchers.hasItems(
                 ExerciseMatcher.copy(TestData.USER_1_EXERCISE_1),
                 ExerciseMatcher.copy(TestData.USER_1_EXERCISE_2))
         );
 
-        found = exerciseDao.findForUser(TestData.USER_1.getId(), null, null, TIME_NOW - TimeUnit.HOURS.toMillis(1));
+        found = exerciseDao.findForUser(TestData.USER_1.getId(), (Exercise.Type) null, null, TIME_NOW - TimeUnit.HOURS.toMillis(1));
         assertEquals(1, found.size());
         assertThat(found, Matchers.hasItems(
                 ExerciseMatcher.copy(TestData.USER_1_EXERCISE_1)));
 
-        found = exerciseDao.findForUser(TestData.USER_1.getId(), null, null, TIME_NOW - TimeUnit.HOURS.toMillis(3));
+        found = exerciseDao.findForUser(TestData.USER_1.getId(), (Exercise.Type) null, null, TIME_NOW - TimeUnit.HOURS.toMillis(3));
         assertEquals(0, found.size());
 
-        found = exerciseDao.findForUser(TestData.USER_1.getId(), null,
+        found = exerciseDao.findForUser(TestData.USER_1.getId(), (Exercise.Type) null,
                 TIME_NOW - TimeUnit.HOURS.toMillis(3), TIME_NOW - TimeUnit.HOURS.toMillis(1));
         assertEquals(1, found.size());
         assertThat(found, Matchers.hasItems(ExerciseMatcher.copy(TestData.USER_1_EXERCISE_1)));
@@ -139,7 +139,7 @@ public class ExerciseDaoIntegrationTest extends AbstractIntegrationTest {
     @Test
     public void testFoundCornerCase() throws Exception {
         List<Exercise> found = exerciseDao.findForUser(
-                TestData.USER_1.getId(), null, TestData.USER_1_EXERCISE_1.getStartTimestamp(),
+                TestData.USER_1.getId(), (Exercise.Type) null, TestData.USER_1_EXERCISE_1.getStartTimestamp(),
                 TestData.USER_1_EXERCISE_2.getStartTimestamp()
         );
         assertEquals(1, found.size());

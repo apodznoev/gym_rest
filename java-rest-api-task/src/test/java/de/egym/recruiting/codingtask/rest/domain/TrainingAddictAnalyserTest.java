@@ -5,6 +5,7 @@ import de.egym.recruiting.codingtask.jpa.dao.ExerciseDao;
 import de.egym.recruiting.codingtask.jpa.domain.Exercise;
 import de.egym.recruiting.codingtask.jpa.domain.User;
 import de.egym.recruiting.codingtask.jpa.domain.UserAchievement;
+import de.egym.recruiting.codingtask.rest.domain.achievements.TrainingAddictAnalyser;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -59,7 +60,7 @@ public class TrainingAddictAnalyserTest {
 
     @Test
     public void testAchievementLessThan4OnStart() throws Exception {
-        when(exerciseDao.findForUser(eq(1L), any(), any(), any())).thenReturn(
+        when(exerciseDao.findForUser(eq(1L), any(Exercise.Type.class), any(), any())).thenReturn(
                 Arrays.asList(
                         getLong(DayOfWeek.MONDAY),
                         getLong(DayOfWeek.TUESDAY),
@@ -67,12 +68,12 @@ public class TrainingAddictAnalyserTest {
                 ));
         assertNoAchievements(analyser.loadInitialData());
         assertNoAchievements(analyser.observeAchievement());
-        verify(exerciseDao, times(1)).findForUser(1L, null, TimeUnit.DAYS.toMillis(3), NOW_TIME);
+        verify(exerciseDao, times(1)).findForUser(1L, (Exercise.Type) null, TimeUnit.DAYS.toMillis(3), NOW_TIME);
     }
 
     @Test
     public void testAchievementLessThan4LongOnStart() throws Exception {
-        when(exerciseDao.findForUser(eq(1L), any(), any(), any())).thenReturn(
+        when(exerciseDao.findForUser(eq(1L), any(Exercise.Type.class), any(), any())).thenReturn(
                 Arrays.asList(
                         getLong(DayOfWeek.MONDAY),
                         getLong(DayOfWeek.TUESDAY),
@@ -81,7 +82,7 @@ public class TrainingAddictAnalyserTest {
                 ));
         assertNoAchievements(analyser.loadInitialData());
         assertNoAchievements(analyser.observeAchievement());
-        verify(exerciseDao, times(1)).findForUser(1L, null, TimeUnit.DAYS.toMillis(3), NOW_TIME);
+        verify(exerciseDao, times(1)).findForUser(1L, (Exercise.Type) null, TimeUnit.DAYS.toMillis(3), NOW_TIME);
     }
 
 
@@ -89,14 +90,14 @@ public class TrainingAddictAnalyserTest {
     public void testExerciseOutOfWeek() throws Exception {
         final Exercise outOfWeek = createExercise(DayOfWeek.MONDAY, 6000);
         outOfWeek.setStartTimestamp(outOfWeek.getStartTimestamp() - TimeUnit.DAYS.toMillis(2));
-        when(exerciseDao.findForUser(eq(1L), any(), any(), any())).thenReturn(
+        when(exerciseDao.findForUser(eq(1L), any(Exercise.Type.class), any(), any())).thenReturn(
                 Arrays.asList(
                         outOfWeek,
                         getLong(DayOfWeek.MONDAY),
                         getLong(DayOfWeek.TUESDAY),
                         getLong(DayOfWeek.FRIDAY)
                 ));
-        when(exerciseDao.findForUser(eq(1L), any(), eq(TimeUnit.DAYS.toMillis(3)), eq(NOW_TIME))).thenReturn(
+        when(exerciseDao.findForUser(eq(1L), any(Exercise.Type.class), eq(TimeUnit.DAYS.toMillis(3)), eq(NOW_TIME))).thenReturn(
                 Arrays.asList(
                         getLong(DayOfWeek.MONDAY),
                         getLong(DayOfWeek.TUESDAY),
@@ -104,13 +105,13 @@ public class TrainingAddictAnalyserTest {
                 ));
         assertNoAchievements(analyser.loadInitialData());
         assertNoAchievements(analyser.observeAchievement());
-        verify(exerciseDao, times(1)).findForUser(1L, null, TimeUnit.DAYS.toMillis(3), NOW_TIME);
+        verify(exerciseDao, times(1)).findForUser(1L,(Exercise.Type) null, TimeUnit.DAYS.toMillis(3), NOW_TIME);
     }
 
     @Test
     public void testExerciseInASameDay() throws Exception {
         final Exercise repeat = createExercise(DayOfWeek.MONDAY, 6000);
-        when(exerciseDao.findForUser(eq(1L), any(), any(), any())).thenReturn(
+        when(exerciseDao.findForUser(eq(1L), any(Exercise.Type.class), any(), any())).thenReturn(
                 Arrays.asList(
                         repeat,
                         getLong(DayOfWeek.MONDAY),
@@ -119,12 +120,12 @@ public class TrainingAddictAnalyserTest {
                 ));
         assertNoAchievements(analyser.loadInitialData());
         assertNoAchievements(analyser.observeAchievement());
-        verify(exerciseDao, times(1)).findForUser(1L, null, TimeUnit.DAYS.toMillis(3), NOW_TIME);
+        verify(exerciseDao, times(1)).findForUser(1L,(Exercise.Type) null, TimeUnit.DAYS.toMillis(3), NOW_TIME);
     }
 
     @Test
     public void testAchievementReached4Days() throws Exception {
-        when(exerciseDao.findForUser(eq(1L), any(), any(), any())).thenReturn(
+        when(exerciseDao.findForUser(eq(1L), any(Exercise.Type.class), any(), any())).thenReturn(
                 Arrays.asList(
                         getLong(DayOfWeek.MONDAY),
                         getLong(DayOfWeek.TUESDAY),
@@ -133,12 +134,12 @@ public class TrainingAddictAnalyserTest {
                         ));
         assertAchievements(analyser.loadInitialData());
         assertAchievements(analyser.observeAchievement());
-        verify(exerciseDao, times(1)).findForUser(1L, null, TimeUnit.DAYS.toMillis(3), NOW_TIME);
+        verify(exerciseDao, times(1)).findForUser(1L,(Exercise.Type) null, TimeUnit.DAYS.toMillis(3), NOW_TIME);
     }
 
     @Test
     public void testAchievementReachedVariousDays() throws Exception {
-        when(exerciseDao.findForUser(eq(1L), any(), any(), any())).thenReturn(
+        when(exerciseDao.findForUser(eq(1L), any(Exercise.Type.class), any(), any())).thenReturn(
                 Arrays.asList(
                         getLong(DayOfWeek.MONDAY),
                         getLong(DayOfWeek.TUESDAY),
@@ -149,12 +150,12 @@ public class TrainingAddictAnalyserTest {
                 ));
         assertAchievements(analyser.loadInitialData());
         assertAchievements(analyser.observeAchievement());
-        verify(exerciseDao, times(1)).findForUser(1L, null, TimeUnit.DAYS.toMillis(3), NOW_TIME);
+        verify(exerciseDao, times(1)).findForUser(1L,(Exercise.Type) null, TimeUnit.DAYS.toMillis(3), NOW_TIME);
     }
 
     @Test
     public void testEvictAchievementNextWeek() throws Exception {
-        when(exerciseDao.findForUser(eq(1L), any(), any(), any())).thenReturn(
+        when(exerciseDao.findForUser(eq(1L), any(Exercise.Type.class), any(), any())).thenReturn(
                 Arrays.asList(
                         getLong(DayOfWeek.MONDAY),
                         getLong(DayOfWeek.TUESDAY),
@@ -163,7 +164,7 @@ public class TrainingAddictAnalyserTest {
                         ));
         assertAchievements(analyser.loadInitialData());
         assertAchievements(analyser.observeAchievement());
-        verify(exerciseDao, times(1)).findForUser(1L, null, TimeUnit.DAYS.toMillis(3), NOW_TIME);
+        verify(exerciseDao, times(1)).findForUser(1L,(Exercise.Type) null, TimeUnit.DAYS.toMillis(3), NOW_TIME);
 
         TestTiming.useTestTime(NOW_TIME + TimeUnit.DAYS.toMillis(7));
         assertNoAchievements(analyser.observeAchievement());
@@ -171,7 +172,7 @@ public class TrainingAddictAnalyserTest {
 
     @Test
     public void testAchievementsNotReachedOnNewShortExercise() throws Exception {
-        when(exerciseDao.findForUser(eq(1L), any(), any(), any())).thenReturn(
+        when(exerciseDao.findForUser(eq(1L), any(Exercise.Type.class), any(), any())).thenReturn(
                 Arrays.asList(
                         getLong(DayOfWeek.TUESDAY),
                         getLong(DayOfWeek.WEDNESDAY),
@@ -179,7 +180,7 @@ public class TrainingAddictAnalyserTest {
                 ));
         assertNoAchievements(analyser.loadInitialData());
         assertNoAchievements(analyser.observeAchievement());
-        verify(exerciseDao, times(1)).findForUser(1L, null, TimeUnit.DAYS.toMillis(3), NOW_TIME);
+        verify(exerciseDao, times(1)).findForUser(1L,(Exercise.Type) null, TimeUnit.DAYS.toMillis(3), NOW_TIME);
 
         final Exercise newExercise = createExercise(DayOfWeek.SATURDAY, 25);
         assertNoAchievements(analyser.analyseExercise(newExercise));
@@ -188,7 +189,7 @@ public class TrainingAddictAnalyserTest {
 
     @Test
     public void testAchievementsReachedNewLongExercise() throws Exception {
-        when(exerciseDao.findForUser(eq(1L), any(), any(), any())).thenReturn(
+        when(exerciseDao.findForUser(eq(1L), any(Exercise.Type.class), any(), any())).thenReturn(
                 Arrays.asList(
                         getLong(DayOfWeek.MONDAY),
                         getLong(DayOfWeek.TUESDAY),
@@ -196,7 +197,7 @@ public class TrainingAddictAnalyserTest {
                 ));
         assertNoAchievements(analyser.loadInitialData());
         assertNoAchievements(analyser.observeAchievement());
-        verify(exerciseDao, times(1)).findForUser(1L, null, TimeUnit.DAYS.toMillis(3), NOW_TIME);
+        verify(exerciseDao, times(1)).findForUser(1L,(Exercise.Type) null, TimeUnit.DAYS.toMillis(3), NOW_TIME);
 
         final Exercise newExercise = createExercise(DayOfWeek.SATURDAY, 6000);
         assertAchievements(analyser.analyseExercise(newExercise));
@@ -205,7 +206,7 @@ public class TrainingAddictAnalyserTest {
 
     @Test
     public void testAchievementsNotReachedNewLongExerciseSameDay() throws Exception {
-        when(exerciseDao.findForUser(eq(1L), any(), any(), any())).thenReturn(
+        when(exerciseDao.findForUser(eq(1L), any(Exercise.Type.class), any(), any())).thenReturn(
                 Arrays.asList(
                         getLong(DayOfWeek.MONDAY),
                         getLong(DayOfWeek.TUESDAY),
@@ -213,7 +214,7 @@ public class TrainingAddictAnalyserTest {
                 ));
         assertNoAchievements(analyser.loadInitialData());
         assertNoAchievements(analyser.observeAchievement());
-        verify(exerciseDao, times(1)).findForUser(1L, null, TimeUnit.DAYS.toMillis(3), NOW_TIME);
+        verify(exerciseDao, times(1)).findForUser(1L,(Exercise.Type) null, TimeUnit.DAYS.toMillis(3), NOW_TIME);
 
         final Exercise newExercise = createExercise(DayOfWeek.FRIDAY, 6000);
         assertNoAchievements(analyser.analyseExercise(newExercise));

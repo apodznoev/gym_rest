@@ -7,8 +7,12 @@ import de.egym.recruiting.codingtask.jpa.dao.AbstractBaseDao;
 import de.egym.recruiting.codingtask.jpa.dao.ExerciseDao;
 import de.egym.recruiting.codingtask.jpa.domain.Exercise;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -24,19 +28,26 @@ public class ExerciseDaoImpl extends AbstractBaseDao<Exercise> implements Exerci
     }
 
     @Override
-    public List<Exercise> findForUser(long userId, Exercise.Type type, Long startFromInclusive, Long startTillExclusive) {
+    public List<Exercise> findForUser(long userId, @Nullable Exercise.Type type,
+                                      @Nullable Long startFromInclusive, @Nullable Long startTillExclusive) {
+        return findForUser(userId, type == null ? Collections.emptyList() : Collections.singletonList(type), startFromInclusive, startTillExclusive);
+    }
+
+    @Override
+    public List<Exercise> findForUser(long userId, @Nonnull Collection<Exercise.Type> types,
+                                      @Nullable Long startFromInclusive, @Nullable Long startTillExclusive) {
         String querySql = "SELECT e FROM Exercise e WHERE e.user.id = :userId ";
-        if (type != null)
-            querySql += "AND e.type = :type ";
+        if (!types.isEmpty())
+            querySql += "AND e.type IN :typesList ";
         if (startFromInclusive != null)
             querySql += "AND e.startTimestamp >= :from ";
         if (startTillExclusive != null)
             querySql += "AND e.startTimestamp < :to";
 
-        Query query = getEntityManager().createQuery(querySql);
+        Query query = getEntityManager().createQuery(querySql + " ORDER BY e.startTimestamp ASC");
 
-        if (type != null)
-            query.setParameter("type", type);
+        if (!types.isEmpty())
+            query.setParameter("typesList", types);
         if (startFromInclusive != null)
             query.setParameter("from", Math.max(0, startFromInclusive));
         if (startTillExclusive != null)

@@ -1,4 +1,4 @@
-package de.egym.recruiting.codingtask.rest.domain;
+package de.egym.recruiting.codingtask.rest.domain.achievements;
 
 import de.egym.recruiting.codingtask.jpa.dao.ExerciseDao;
 import de.egym.recruiting.codingtask.jpa.domain.Exercise;
@@ -14,6 +14,7 @@ import java.util.Optional;
 public abstract class AchievementAnalyser {
     protected User user;
     protected ExerciseDao exerciseDao;
+    protected UserAchievement achieved;
 
     public void setUser(User user) {
         this.user = user;
@@ -28,7 +29,12 @@ public abstract class AchievementAnalyser {
      *
      * @return optional having achievement if conditions are met
      */
-    abstract Optional<UserAchievement> loadInitialData();
+    public Optional<UserAchievement> loadInitialData(){
+        doLoadInitialData();
+        return observeAchievement();
+    }
+
+    protected abstract void doLoadInitialData();
 
     /**
      * Analyse new exercise possibly generating an achievement if it makes some conditions satisfied
@@ -36,12 +42,22 @@ public abstract class AchievementAnalyser {
      * @param exercise new exercise
      * @return optional having achievement if conditions are met
      */
-    abstract Optional<UserAchievement> analyseExercise(Exercise exercise);
+    public Optional<UserAchievement> analyseExercise(Exercise exercise){
+        if(achieved != null)
+            return observeAchievement();
+
+        doAnalyseExercise(exercise);
+        return observeAchievement();
+    }
+
+    protected abstract void doAnalyseExercise(Exercise exercise);
 
     /**
      * Checks if consumed exercises combine some achievement
      *
      * @return optional having achievement if conditions are met
      */
-    abstract Optional<UserAchievement> observeAchievement();
+    Optional<UserAchievement> observeAchievement(){
+        return Optional.ofNullable(achieved);
+    }
 }

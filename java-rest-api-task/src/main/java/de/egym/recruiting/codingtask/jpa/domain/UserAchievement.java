@@ -1,6 +1,6 @@
 package de.egym.recruiting.codingtask.jpa.domain;
 
-import de.egym.recruiting.codingtask.rest.domain.AchievementType;
+import de.egym.recruiting.codingtask.rest.domain.achievements.AchievementType;
 import io.swagger.annotations.ApiModelProperty;
 
 /**

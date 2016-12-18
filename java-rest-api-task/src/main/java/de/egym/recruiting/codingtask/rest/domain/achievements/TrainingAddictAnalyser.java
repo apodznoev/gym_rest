@@ -1,4 +1,4 @@
-package de.egym.recruiting.codingtask.rest.domain;
+package de.egym.recruiting.codingtask.rest.domain.achievements;
 
 import de.egym.recruiting.codingtask.Timing;
 import de.egym.recruiting.codingtask.jpa.domain.Exercise;
@@ -30,10 +30,9 @@ public class TrainingAddictAnalyser extends AchievementAnalyser {
             (Comparator<DayOfWeek>) (d1, d2) -> Integer.compare(d1.getValue(), d2.getValue())
     );
 
-    private UserAchievement achieved;
 
     @Override
-    public Optional<UserAchievement> loadInitialData() {
+    public void doLoadInitialData() {
         log.debug("Loading initial data for user:{}", user.getId());
         LocalDateTime now = LocalDateTime.now(Timing.getClock());
         LocalDateTime beginOfWeek = now
@@ -44,17 +43,16 @@ public class TrainingAddictAnalyser extends AchievementAnalyser {
                 .minus(now.getNano(), ChronoUnit.NANOS);
         long timestampStart = beginOfWeek.atZone(ZoneId.of("UTC")).toInstant().toEpochMilli();
         long timestampNow = now.atZone(ZoneId.of("UTC")).toInstant().toEpochMilli();
-        List<Exercise> exercises = exerciseDao.findForUser(user.getId(), null, timestampStart, timestampNow);
+        List<Exercise> exercises = exerciseDao.findForUser(user.getId(), (Exercise.Type) null, timestampStart, timestampNow);
         thisWeekExercises.putAll(exercises
                 .stream()
                 .filter(exercise -> exercise.getDurationSecs() >= MIN_EXERCISE_DURATION_SECS)
                 .collect(Collectors.groupingBy(TrainingAddictAnalyser::getDayOfWeek))
         );
-        return observeAchievement();
     }
 
     @Override
-    public Optional<UserAchievement> analyseExercise(Exercise exercise) {
+    public void  doAnalyseExercise(Exercise exercise) {
         log.debug("Analysing exercise: {} for user: {}", exercise.getId(), user.getId());
         DayOfWeek dayOfWeek = getDayOfWeek(exercise);
         thisWeekExercises.merge(dayOfWeek, Collections.singletonList(exercise), (previous, next) -> {
@@ -64,8 +62,6 @@ public class TrainingAddictAnalyser extends AchievementAnalyser {
             previous.addAll(next);
             return previous;
         });
-
-        return observeAchievement();
     }
 
     @Override

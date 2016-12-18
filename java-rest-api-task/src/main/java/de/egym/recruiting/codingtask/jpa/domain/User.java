@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
+import org.joda.time.Duration;
+import org.joda.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -46,6 +48,14 @@ public class User extends AbstractEntity {
 
 	public String getEmail() {
 		return email;
+	}
+
+	@JsonIgnore
+	public int getAge() {
+		LocalDateTime birthday = LocalDateTime.fromDateFields(getBirthday());
+		LocalDateTime now = LocalDateTime.now();
+		Duration duration = new Duration(birthday.toDateTime(), now.toDateTime());
+		return (int) (duration.getStandardDays() / 365);
 	}
 
 	public Date getBirthday() {

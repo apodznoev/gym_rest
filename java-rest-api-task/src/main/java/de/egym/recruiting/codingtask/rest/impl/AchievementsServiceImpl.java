@@ -10,7 +10,7 @@ import de.egym.recruiting.codingtask.jpa.dao.ExerciseDao;
 import de.egym.recruiting.codingtask.jpa.domain.Exercise;
 import de.egym.recruiting.codingtask.jpa.domain.UserAchievement;
 import de.egym.recruiting.codingtask.rest.AchievementsService;
-import de.egym.recruiting.codingtask.rest.domain.AchievementsFactory;
+import de.egym.recruiting.codingtask.rest.domain.achievements.AchievementsFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,7 +77,7 @@ public class AchievementsServiceImpl implements AchievementsService {
 
     private long calculate(long userId, long from, long to) {
         log.debug("Performing calculation of points user: {}, from: {}, to: {}", userId, from, to);
-        List<Exercise> exercises = exerciseDao.findForUser(userId, null, from, to);
+        List<Exercise> exercises = exerciseDao.findForUser(userId, (Exercise.Type) null, from, to);
         return exercises.stream()
                 .mapToLong(exercise ->
                         exercise.getCaloriesBurned() + TimeUnit.SECONDS.toMinutes(exercise.getDurationSecs()))

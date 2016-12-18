@@ -1,4 +1,4 @@
-package de.egym.recruiting.codingtask.rest.domain;
+package de.egym.recruiting.codingtask.rest.domain.achievements;
 
 import de.egym.recruiting.codingtask.jpa.dao.ExerciseDao;
 import de.egym.recruiting.codingtask.jpa.domain.Exercise;

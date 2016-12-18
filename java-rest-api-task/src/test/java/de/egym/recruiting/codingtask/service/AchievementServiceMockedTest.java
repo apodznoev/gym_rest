@@ -79,16 +79,16 @@ public class AchievementServiceMockedTest {
         exercise3.setCaloriesBurned(99999);
         exercise3.setDurationSecs(99999);
 
-        when(exerciseDao.findForUser(eq(1L), any(), any(), any())).thenReturn(Arrays.asList(exercise1, exercise2));
-        when(exerciseDao.findForUser(eq(2L), any(), any(), any())).thenReturn(Collections.singletonList(exercise3));
+        when(exerciseDao.findForUser(eq(1L), any(Exercise.Type.class), any(), any())).thenReturn(Arrays.asList(exercise1, exercise2));
+        when(exerciseDao.findForUser(eq(2L), any(Exercise.Type.class), any(), any())).thenReturn(Collections.singletonList(exercise3));
 
         long points = achievementsService.calculatePoints(1L, null, null);
         assertEquals(1000 + 2 + 123 + 1, points);
-        verify(exerciseDao, times(1)).findForUser(1L, null, 0L, TIME_NOW);
+        verify(exerciseDao, times(1)).findForUser(1L, (Exercise.Type) null, 0L, TIME_NOW);
 
         points = achievementsService.getLastPoints(1L);
         assertEquals(1000 + 2 + 123 + 1, points);
-        verify(exerciseDao, times(1)).findForUser(1L, null, TIME_NOW - FOUR_WEEKS, TIME_NOW);
+        verify(exerciseDao, times(1)).findForUser(1L, (Exercise.Type) null, TIME_NOW - FOUR_WEEKS, TIME_NOW);
     }
 
     @Test
@@ -101,14 +101,14 @@ public class AchievementServiceMockedTest {
         exercise1.setCaloriesBurned(999);
         exercise1.setDurationSecs(45);
 
-        when(exerciseDao.findForUser(eq(1L), any(), any(), any())).thenReturn(Collections.singletonList(exercise1));
+        when(exerciseDao.findForUser(eq(1L), any(Exercise.Type.class), any(), any())).thenReturn(Collections.singletonList(exercise1));
         long points = achievementsService.getLastPoints(1L);
         assertEquals(999, points);
-        verify(exerciseDao, times(1)).findForUser(1L, null, TIME_NOW - FOUR_WEEKS, TIME_NOW);
+        verify(exerciseDao, times(1)).findForUser(1L, (Exercise.Type) null, TIME_NOW - FOUR_WEEKS, TIME_NOW);
 
         points = achievementsService.getLastPoints(1L);
         assertEquals(999, points);
-        verify(exerciseDao, times(1)).findForUser(1L, null, TIME_NOW - FOUR_WEEKS, TIME_NOW);
+        verify(exerciseDao, times(1)).findForUser(1L, (Exercise.Type) null, TIME_NOW - FOUR_WEEKS, TIME_NOW);
 
         try {
             long fiveMinutes = TimeUnit.MINUTES.toMillis(5);
@@ -116,7 +116,7 @@ public class AchievementServiceMockedTest {
             points = achievementsService.getLastPoints(1L);
             assertEquals(999, points);
             //cache must be expired after 5 minutes
-            verify(exerciseDao, times(1)).findForUser(1L, null, TIME_NOW - FOUR_WEEKS + fiveMinutes, TIME_NOW + fiveMinutes);
+            verify(exerciseDao, times(1)).findForUser(1L, (Exercise.Type) null, TIME_NOW - FOUR_WEEKS + fiveMinutes, TIME_NOW + fiveMinutes);
         } finally {
             TestTiming.useTestTime(TIME_NOW);
         }
@@ -144,39 +144,63 @@ public class AchievementServiceMockedTest {
         exercise3.setCaloriesBurned(240);
         exercise3.setDurationSecs(600);
 
-        when(exerciseDao.findForUser(eq(1L), any(), AdditionalMatchers.leq(TIME_NOW - FOUR_WEEKS - 1), eq(TIME_NOW - TimeUnit.DAYS.toMillis(14))))
-                .thenReturn(Arrays.asList(exercise1, exercise2));
+        when(exerciseDao.findForUser(
+                eq(1L),
+                any(Exercise.Type.class),
+                AdditionalMatchers.leq(TIME_NOW - FOUR_WEEKS - 1),
+                eq(TIME_NOW - TimeUnit.DAYS.toMillis(14)))
+        ).thenReturn(Arrays.asList(exercise1, exercise2));
 
-        when(exerciseDao.findForUser(eq(1L), any(), AdditionalMatchers.leq(TIME_NOW - FOUR_WEEKS - 1), AdditionalMatchers.geq(TIME_NOW - TimeUnit.DAYS.toMillis(14) + 1)))
-                .thenReturn(Arrays.asList(exercise1, exercise2, exercise3));
+        when(exerciseDao.findForUser(
+                eq(1L),
+                any(Exercise.Type.class),
+                AdditionalMatchers.leq(TIME_NOW - FOUR_WEEKS - 1),
+                AdditionalMatchers.geq(TIME_NOW - TimeUnit.DAYS.toMillis(14) + 1))
+        ).thenReturn(Arrays.asList(exercise1, exercise2, exercise3));
 
-        when(exerciseDao.findForUser(eq(1L), any(), AdditionalMatchers.leq(TIME_NOW - FOUR_WEEKS + 1), AdditionalMatchers.geq(TIME_NOW - TimeUnit.DAYS.toMillis(14) + 1)))
-                .thenReturn(Arrays.asList(exercise2, exercise3));
+        when(exerciseDao.findForUser(
+                eq(1L),
+                any(Exercise.Type.class),
+                AdditionalMatchers.leq(TIME_NOW - FOUR_WEEKS + 1),
+                AdditionalMatchers.geq(TIME_NOW - TimeUnit.DAYS.toMillis(14) + 1))
+        ).thenReturn(Arrays.asList(exercise2, exercise3));
 
-        when(exerciseDao.findForUser(eq(1L), any(), AdditionalMatchers.leq(TIME_NOW - TimeUnit.DAYS.toMillis(14)), AdditionalMatchers.geq(TIME_NOW - TimeUnit.DAYS.toMillis(14) + 1)))
-                .thenReturn(Collections.singletonList(exercise3));
+        when(exerciseDao.findForUser(
+                eq(1L),
+                any(Exercise.Type.class),
+                AdditionalMatchers.leq(TIME_NOW - TimeUnit.DAYS.toMillis(14)),
+                AdditionalMatchers.geq(TIME_NOW - TimeUnit.DAYS.toMillis(14) + 1))
+        ).thenReturn(Collections.singletonList(exercise3));
 
-        when(exerciseDao.findForUser(eq(1L), any(), AdditionalMatchers.leq(TIME_NOW - FOUR_WEEKS - 1), AdditionalMatchers.geq(TIME_NOW - TimeUnit.DAYS.toMillis(14) + 1)))
-                .thenReturn(Arrays.asList(exercise1, exercise2, exercise3));
+        when(exerciseDao.findForUser(
+                eq(1L),
+                any(Exercise.Type.class),
+                AdditionalMatchers.leq(TIME_NOW - FOUR_WEEKS - 1),
+                AdditionalMatchers.geq(TIME_NOW - TimeUnit.DAYS.toMillis(14) + 1))
+        ).thenReturn(Arrays.asList(exercise1, exercise2, exercise3));
 
-        when(exerciseDao.findForUser(eq(1L), any(), eq(TIME_NOW - FOUR_WEEKS), AdditionalMatchers.geq(TIME_NOW)))
-                .thenReturn(Arrays.asList(exercise2, exercise3));
+        when(exerciseDao.findForUser(
+                eq(1L),
+                any(Exercise.Type.class),
+                eq(TIME_NOW - FOUR_WEEKS),
+                AdditionalMatchers.geq(TIME_NOW))
+        ).thenReturn(Arrays.asList(exercise2, exercise3));
 
         long points = achievementsService.getLastPoints(1L);
         assertEquals(240 + 10 + 123 + 1, points);
-        verify(exerciseDao, times(1)).findForUser(1L, null, TIME_NOW - FOUR_WEEKS, TIME_NOW);
+        verify(exerciseDao, times(1)).findForUser(1L, (Exercise.Type) null, TIME_NOW - FOUR_WEEKS, TIME_NOW);
 
         //check caching
         points = achievementsService.getLastPoints(1L);
         assertEquals(240 + 10 + 123 + 1, points);
-        verify(exerciseDao, times(1)).findForUser(eq(1L), any(), any(), any());
+        verify(exerciseDao, times(1)).findForUser(eq(1L), any((Exercise.Type.class)), any(), any());
 
         points = achievementsService.calculatePoints(1L, TIME_NOW - TimeUnit.DAYS.toMillis(14), TIME_NOW - 1000);
         assertEquals(240 + 10, points);
-        verify(exerciseDao, times(1)).findForUser(1L, null, TIME_NOW - TimeUnit.DAYS.toMillis(14), TIME_NOW - 1000);
+        verify(exerciseDao, times(1)).findForUser(1L, (Exercise.Type) null, TIME_NOW - TimeUnit.DAYS.toMillis(14), TIME_NOW - 1000);
 
         points = achievementsService.calculatePoints(1L, TIME_NOW - FOUR_WEEKS - 1, TIME_NOW - TimeUnit.DAYS.toMillis(14));
         assertEquals(1000 + 1 + 123 + 1, points);
-        verify(exerciseDao, times(1)).findForUser(1L, null, TIME_NOW - FOUR_WEEKS - 1, TIME_NOW - TimeUnit.DAYS.toMillis(14));
+        verify(exerciseDao, times(1)).findForUser(1L, (Exercise.Type) null, TIME_NOW - FOUR_WEEKS - 1, TIME_NOW - TimeUnit.DAYS.toMillis(14));
     }
 }

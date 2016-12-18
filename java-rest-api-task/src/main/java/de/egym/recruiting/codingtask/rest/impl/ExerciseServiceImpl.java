@@ -77,6 +77,7 @@ public class ExerciseServiceImpl implements ExerciseService {
         newExercise.setId(null);
         validateExercise(newExercise);
         Exercise exercise = exerciseDao.create(newExercise);
+        //for the simplicity we do not consider the case when exercise was added to the history
         achievementsService.handleNewExercise(exercise);
         return exercise;
     }
@@ -118,7 +119,7 @@ public class ExerciseServiceImpl implements ExerciseService {
 
     private void validateExerciseConflicts(Exercise newExercise) throws ClientErrorException {
         long end = newExercise.getEndTimestamp();
-        List<Exercise> exercisesBeforeGivenEnded = exerciseDao.findForUser(newExercise.getUser().getId(), null, null, end);
+        List<Exercise> exercisesBeforeGivenEnded = exerciseDao.findForUser(newExercise.getUser().getId(), (Exercise.Type)null, null, end);
         Exercise conflict = exercisesBeforeGivenEnded
                 .stream()
                 .filter(exercise -> exercise.getEndTimestamp() > newExercise.getStartTimestamp())
