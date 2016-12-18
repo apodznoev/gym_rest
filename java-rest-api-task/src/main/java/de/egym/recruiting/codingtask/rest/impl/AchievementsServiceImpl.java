@@ -8,8 +8,9 @@ import com.google.inject.Singleton;
 import de.egym.recruiting.codingtask.Timing;
 import de.egym.recruiting.codingtask.jpa.dao.ExerciseDao;
 import de.egym.recruiting.codingtask.jpa.domain.Exercise;
+import de.egym.recruiting.codingtask.jpa.domain.UserAchievement;
 import de.egym.recruiting.codingtask.rest.AchievementsService;
-import io.swagger.annotations.ApiParam;
+import de.egym.recruiting.codingtask.rest.domain.AchievementsFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +19,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * TODO: write REST service tests
+ *
  * Created by apodznoev
  * date 17.12.2016.
  */
@@ -25,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 public class AchievementsServiceImpl implements AchievementsService {
     private static final Logger log = LoggerFactory.getLogger(AchievementsServiceImpl.class);
     private final ExerciseDao exerciseDao;
+    private final AchievementsFactory achievementsFactory;
 
     //userId -> points for last 4 weeks
     private final Cache<Long, Long> last4WeeksPointsCache = CacheBuilder
@@ -42,10 +46,17 @@ public class AchievementsServiceImpl implements AchievementsService {
     @Inject
     AchievementsServiceImpl(final ExerciseDao exerciseDao) {
         this.exerciseDao = exerciseDao;
+        this.achievementsFactory = new AchievementsFactory(exerciseDao);
     }
 
     @Override
-    public long calculatePoints(@ApiParam(value = "id of the user") long userId,
+    public List<UserAchievement> getAchievements(long userId) {
+        log.debug("Querying achievements for the user: {}", userId);
+        return achievementsFactory.getAchievements(userId);
+    }
+
+    @Override
+    public long calculatePoints(long userId,
                                 @Nullable Long fromInclusive,
                                 @Nullable Long toExclusive) {
         log.debug("Calculating achievement points for user: {} from: {} to: {}", userId, fromInclusive, toExclusive);
@@ -56,7 +67,7 @@ public class AchievementsServiceImpl implements AchievementsService {
     }
 
     @Override
-    public long getLastPoints(@ApiParam(value = "id of the user") long userId) {
+    public long getLastPoints(long userId) {
         log.debug("Getting last achievement points for user: {}", userId);
         log.debug("Cache stats: {}", last4WeeksPointsCache.stats());
         long now = Timing.getMillis();
@@ -73,9 +84,10 @@ public class AchievementsServiceImpl implements AchievementsService {
                 .sum();
     }
 
-    public void handleExercise(Exercise exercise) {
+    public void handleNewExercise(Exercise exercise) {
         log.debug("New exercise: {} for user: {} received clearing cache", exercise.getId(), exercise.getUser().getId());
         //but later we can dynamically merge it with already calculated points instead of just invalidating
         last4WeeksPointsCache.invalidate(exercise.getUser().getId());
+        achievementsFactory.consume(exercise);
     }
 }

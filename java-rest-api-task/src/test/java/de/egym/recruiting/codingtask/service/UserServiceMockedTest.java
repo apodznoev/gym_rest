@@ -195,9 +195,8 @@ public class UserServiceMockedTest {
 		assertEquals(newUser, userService.createUser(newUser));
 		verify(userDao, times(2)).create(newUser);
 
-		try (TestTiming timing = TestTiming.useTestTime()) {
-			long now = 5000;
-			timing.setTime(now);
+		long now = 5000;
+		try (TestTiming ignored = TestTiming.useTestTime(now)) {
 			newUser.setBirthday(now + 1);
 			checkException(() -> userService.createUser(newUser), BadRequestException.class);
 

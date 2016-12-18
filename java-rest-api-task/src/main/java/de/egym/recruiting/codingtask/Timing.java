@@ -3,6 +3,8 @@ package de.egym.recruiting.codingtask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Clock;
+
 /**
  * Created by apodznoev
  * date 17.12.2016.
@@ -10,31 +12,18 @@ import org.slf4j.LoggerFactory;
 public class Timing {
     private static final Logger log = LoggerFactory.getLogger(Timing.class);
 
-    static final TimeProvider DEFAULT = new TimeProvider() {
-        @Override
-        public long getTime() {
-            return System.currentTimeMillis();
-        }
+    private static volatile Clock clock = Clock.systemDefaultZone();
 
-        @Override
-        public String toString() {
-            return "Real timing, now:" + System.currentTimeMillis();
-        }
-    };
-
-    private static volatile TimeProvider provider = DEFAULT;
-
-    public static void setTimeProvider(TimeProvider provider) {
-        log.info("Time was changed! New timer is: {}", provider);
-        Timing.provider = provider;
+    public static void setClock(Clock clock) {
+        log.info("Time was changed! New timer is: {}", clock);
+        Timing.clock = clock;
     }
 
     public static long getMillis() {
-        return provider.getTime();
+        return clock.millis();
     }
 
-    public interface TimeProvider {
-
-        long getTime();
+    public static Clock getClock() {
+        return clock;
     }
 }

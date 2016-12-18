@@ -1,41 +1,32 @@
 package de.egym.recruiting.codingtask;
 
+import org.joda.time.DateTimeUtils;
+
+import java.time.Clock;
+import java.time.Instant;
+
 /**
  * Created by apodznoev
  * date 17.12.2016.
  */
-public class TestTiming implements Timing.TimeProvider, AutoCloseable {
-    public static TestTiming INSTANCE = new TestTiming();
+public class TestTiming implements AutoCloseable {
+    private static TestTiming INSTANCE = new TestTiming();
 
     private TestTiming(){}
 
-    private volatile long currentTime;
-
-    public static TestTiming useTestTime() {
-        Timing.setTimeProvider(INSTANCE);
-        return INSTANCE;
-    }
-
     public static void useRealTime() {
-        Timing.setTimeProvider(Timing.DEFAULT);
+        Timing.setClock(Clock.systemDefaultZone());
+        DateTimeUtils.setCurrentMillisSystem();
     }
 
-    public void setTime(long time) {
-        INSTANCE.currentTime = time;
-    }
-
-    @Override
-    public long getTime() {
-        return currentTime;
+    public static TestTiming useTestTime(long time) {
+        Timing.setClock(Clock.fixed(Instant.ofEpochMilli(time), Clock.systemDefaultZone().getZone()));
+        DateTimeUtils.setCurrentMillisFixed(time);
+        return INSTANCE;
     }
 
     @Override
     public void close() throws Exception {
         useRealTime();
-    }
-
-    @Override
-    public String toString() {
-        return "Test timing, now is: " + currentTime;
     }
 }

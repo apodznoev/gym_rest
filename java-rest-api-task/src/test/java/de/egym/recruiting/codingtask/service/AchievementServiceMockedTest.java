@@ -38,8 +38,7 @@ public class AchievementServiceMockedTest {
 
     @BeforeClass
     public static void setUp() throws Exception {
-        TestTiming.useTestTime();
-        TestTiming.INSTANCE.setTime(TIME_NOW);
+        TestTiming.useTestTime(TIME_NOW);
     }
 
     @AfterClass
@@ -113,13 +112,13 @@ public class AchievementServiceMockedTest {
 
         try {
             long fiveMinutes = TimeUnit.MINUTES.toMillis(5);
-            TestTiming.INSTANCE.setTime(TIME_NOW + fiveMinutes);
+            TestTiming.useTestTime(TIME_NOW + fiveMinutes);
             points = achievementsService.getLastPoints(1L);
             assertEquals(999, points);
             //cache must be expired after 5 minutes
             verify(exerciseDao, times(1)).findForUser(1L, null, TIME_NOW - FOUR_WEEKS + fiveMinutes, TIME_NOW + fiveMinutes);
         } finally {
-            TestTiming.INSTANCE.setTime(TIME_NOW);
+            TestTiming.useTestTime(TIME_NOW);
         }
     }
 

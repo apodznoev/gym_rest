@@ -77,7 +77,7 @@ public class ExerciseServiceImpl implements ExerciseService {
         newExercise.setId(null);
         validateExercise(newExercise);
         Exercise exercise = exerciseDao.create(newExercise);
-        achievementsService.handleExercise(exercise);
+        achievementsService.handleNewExercise(exercise);
         return exercise;
     }
 

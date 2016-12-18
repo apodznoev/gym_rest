@@ -24,8 +24,7 @@ public class ExerciseDaoIntegrationTest extends AbstractIntegrationTest {
 
     @BeforeClass
     public static void setUp() throws Exception {
-        TestTiming.useTestTime();
-        TestTiming.INSTANCE.setTime(TIME_NOW);
+        TestTiming.useTestTime(TIME_NOW);
     }
 
     @AfterClass
@@ -135,6 +134,16 @@ public class ExerciseDaoIntegrationTest extends AbstractIntegrationTest {
                 TIME_NOW - TimeUnit.HOURS.toMillis(3), TIME_NOW - TimeUnit.HOURS.toMillis(1));
         assertEquals(1, found.size());
         assertThat(found, Matchers.hasItems(ExerciseMatcher.copy(TestData.USER_1_EXERCISE_1)));
+    }
+
+    @Test
+    public void testFoundCornerCase() throws Exception {
+        List<Exercise> found = exerciseDao.findForUser(
+                TestData.USER_1.getId(), null, TestData.USER_1_EXERCISE_1.getStartTimestamp(),
+                TestData.USER_1_EXERCISE_2.getStartTimestamp()
+        );
+        assertEquals(1, found.size());
+        assertEquals(TestData.USER_1_EXERCISE_1.getId(), found.get(0).getId());
     }
 
     @Test

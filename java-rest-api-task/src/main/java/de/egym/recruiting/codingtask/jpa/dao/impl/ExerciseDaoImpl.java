@@ -38,9 +38,9 @@ public class ExerciseDaoImpl extends AbstractBaseDao<Exercise> implements Exerci
         if (type != null)
             query.setParameter("type", type);
         if (startFromInclusive != null)
-            query.setParameter("from", startFromInclusive);
+            query.setParameter("from", Math.max(0, startFromInclusive));
         if (startTillExclusive != null)
-            query.setParameter("to", startTillExclusive);
+            query.setParameter("to", Math.max(0, startTillExclusive));
 
         //noinspection unchecked
         return (List<Exercise>)
