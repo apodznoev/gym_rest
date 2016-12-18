@@ -1,6 +1,8 @@
 package de.egym.recruiting.codingtask.jpa.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -8,6 +10,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -25,7 +28,6 @@ public class Exercise extends AbstractEntity {
     @ApiModelProperty(required = true, value = "Type of the exercise from dictionary.", example = "CYCLING")
     private Type type;
 
-    @ApiModelProperty(required = true, value = "Timestamp, start of the exercise.", example = "1481971328067")
     private long startTimestamp;
 
     @ApiModelProperty(required = true, value = "Duration of the exercise in seconds.", example = "3000")
@@ -63,6 +65,14 @@ public class Exercise extends AbstractEntity {
         return startTimestamp;
     }
 
+    @ApiModelProperty(required = true, value = "Timestamp, start of the exercise.", example = "2016-12-17 10:00:14")
+    @JsonFormat(pattern="yyyy-MM-dd hh:mm:ss")
+    @JsonProperty
+    public void setStartTimestamp(Date date) {
+        this.startTimestamp = date.getTime();
+    }
+
+    @JsonIgnore
     public void setStartTimestamp(long startTimestamp) {
         this.startTimestamp = startTimestamp;
     }

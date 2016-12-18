@@ -10,21 +10,21 @@ import io.swagger.annotations.ApiModelProperty;
 public class UserAchievement {
 
     @ApiModelProperty(value = "Type of the achievement.", example = "TRAINING_ADDICT")
-    private final AchievementType getType;
+    private final AchievementType type;
 
     @ApiModelProperty(value = "Timestamp when achievements was obtained.", example = "1482008722959")
-    private final long getAchievementTime;
+    private final long achievementTime;
 
-    public UserAchievement(AchievementType getType, long getAchievementTime) {
-        this.getType = getType;
-        this.getAchievementTime = getAchievementTime;
+    public UserAchievement(AchievementType type, long achievementTime) {
+        this.type = type;
+        this.achievementTime = achievementTime;
     }
 
-    public AchievementType getGetType() {
-        return getType;
+    public AchievementType getType() {
+        return type;
     }
 
-    public long getGetAchievementTime() {
-        return getAchievementTime;
+    public long getAchievementTime() {
+        return achievementTime;
     }
 }
