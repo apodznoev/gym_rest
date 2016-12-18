@@ -42,7 +42,7 @@ public interface ExerciseService {
     @Nullable
     @Produces(MediaType.APPLICATION_JSON)
     Exercise findExercise(@ApiParam(value = "unique identifier of the exercise")
-                            @PathParam("exerciseId") long exerciseId);
+                          @PathParam("exerciseId") long exerciseId);
 
     /**
      * This method index all exercises for the given user.
@@ -67,6 +67,14 @@ public interface ExerciseService {
                                          @ApiParam(value = "optional timestamp till which to select the exercises, exclusive")
                                          @QueryParam(value = "to") Long timestampTo);
 
+    /**
+     * Creates a new exercise from the given object, automatically parsed from JSON.
+     * Throws exception in case of validation errors.
+     * Note, that {@link Exercise#getUser()} must have a valid id of the existing user to pass the validation.
+     *
+     * @param newExercise exercise object with filled fields to be persisted
+     * @return exercise with generated id
+     */
     @POST
     @Path("/")
     @Consumes(MediaType.APPLICATION_JSON)

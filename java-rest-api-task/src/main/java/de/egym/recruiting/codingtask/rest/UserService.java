@@ -43,6 +43,13 @@ public interface UserService {
     @Produces(MediaType.APPLICATION_JSON)
     User getUserById(@Nonnull @PathParam("userId") Long userId);
 
+    /**
+     * Creates a new user from the given object, automatically parsed from JSON.
+     * Throws exception in case of validation errors.
+     *
+     * @param newUser user with filled fields to be persisted
+     * @return user with generated id
+     */
     @POST
     @Path("/")
     @Consumes(MediaType.APPLICATION_JSON)

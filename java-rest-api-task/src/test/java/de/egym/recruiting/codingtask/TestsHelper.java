@@ -14,7 +14,7 @@ public class TestsHelper {
             createUser.run();
             fail("Exception expected:" + exceptionClass);
         } catch (Exception e) {
-            assertEquals(e.getClass(), exceptionClass);
+            assertEquals("Received:" + e.getMessage(), e.getClass(), exceptionClass);
         }
     }
 }

@@ -25,7 +25,7 @@ public class Timing {
     private static volatile TimeProvider provider = DEFAULT;
 
     public static void setTimeProvider(TimeProvider provider) {
-        log.info("Time was changed! New time is: {}", provider);
+        log.info("Time was changed! New timer is: {}", provider);
         Timing.provider = provider;
     }
 

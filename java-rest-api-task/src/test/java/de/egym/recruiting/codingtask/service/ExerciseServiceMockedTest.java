@@ -5,16 +5,18 @@ import de.egym.recruiting.codingtask.jpa.dao.ExerciseDao;
 import de.egym.recruiting.codingtask.jpa.dao.UserDao;
 import de.egym.recruiting.codingtask.jpa.domain.Exercise;
 import de.egym.recruiting.codingtask.jpa.domain.User;
+import de.egym.recruiting.codingtask.rest.impl.AchievementsServiceImpl;
 import de.egym.recruiting.codingtask.rest.impl.ExerciseServiceImpl;
-import javassist.NotFoundException;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.AdditionalMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.ClientErrorException;
+import javax.ws.rs.NotFoundException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -30,6 +32,9 @@ import static org.mockito.Mockito.*;
 public class ExerciseServiceMockedTest {
     @InjectMocks
     private ExerciseServiceImpl exerciseService;
+
+    @Mock
+    private AchievementsServiceImpl achievementsService;
 
     @Mock
     private UserDao userDao;
@@ -90,7 +95,7 @@ public class ExerciseServiceMockedTest {
 
         when(userDao.findById(1L)).thenReturn(user1);
         when(userDao.findById(2L)).thenReturn(null);
-        when(exerciseDao.findForUser(1L, any(), any(), any())).thenReturn(Collections.singletonList(exercise));
+        when(exerciseDao.findForUser(eq(1L), any(), any(), any())).thenReturn(Collections.singletonList(exercise));
 
         final List<Exercise> exercises = exerciseService.indexExercisesForUser(1L, null, null, null);
         assertNotNull(exercises);
@@ -161,39 +166,42 @@ public class ExerciseServiceMockedTest {
 
         final Exercise existingExercise = new Exercise();
         existingExercise.setId(1L);
-        existingExercise.setStartTimestamp(10000);
+        existingExercise.setStartTimestamp(100_000);
         existingExercise.setDurationSecs(50);
 
-        when(exerciseDao.findForUser(1L, null, 10000L, null)).thenReturn(Collections.singletonList(existingExercise));
-        when(exerciseDao.findForUser(1L, null, 10001L, null)).thenReturn(Collections.emptyList());
-        when(exerciseDao.findForUser(1L, null, null, 10000L)).thenReturn(Collections.emptyList());
-        when(exerciseDao.findForUser(1L, null, null, 10001L)).thenReturn(Collections.singletonList(existingExercise));
+        when(exerciseDao.findForUser(eq(1L), any(), AdditionalMatchers.leq(100_000L), isNull(Long.class))).thenReturn(Collections.singletonList(existingExercise));
+        when(exerciseDao.findForUser(eq(1L), any(), AdditionalMatchers.geq(100_001L), isNull(Long.class))).thenReturn(Collections.emptyList());
+        when(exerciseDao.findForUser(eq(1L), any(), isNull(Long.class), AdditionalMatchers.leq(100_000L))).thenReturn(Collections.emptyList());
+        when(exerciseDao.findForUser(eq(1L), any(), isNull(Long.class), AdditionalMatchers.geq(100_001L))).thenReturn(Collections.singletonList(existingExercise));
         when(userDao.findById(1L)).thenReturn(user1);
         when(userDao.findById(2L)).thenReturn(null);
 
         final Exercise newExercise = new Exercise();
+        newExercise.setUser(user1);
         newExercise.setType(Exercise.Type.OTHER);
-        newExercise.setStartTimestamp(9401);
-        newExercise.setDurationSecs(10);
+        newExercise.setStartTimestamp(94001);
+        newExercise.setCaloriesBurned(123);
+        newExercise.setDurationSecs(6);
 
         TestsHelper.checkException(() -> exerciseService.createExercise(newExercise), ClientErrorException.class);
         verify(userDao, times(1)).findById(1L);
-        verify(exerciseDao, times(1)).findForUser(1L, null, null, any());
+        verify(exerciseDao, times(1)).findForUser(eq(1L), any(), anyLong(), anyLong());
 
-        newExercise.setStartTimestamp(9400);
+        newExercise.setStartTimestamp(94000);
         exerciseService.createExercise(newExercise);
         verify(userDao, times(2)).findById(1L);
-        verify(exerciseDao, times(2)).findForUser(1L, null, null, any());
+        verify(exerciseDao, times(2)).findForUser(eq(1L), any(), anyLong(), anyLong());
         verify(exerciseDao, times(1)).create(newExercise);
 
-        newExercise.setStartTimestamp(12999);
+        newExercise.setStartTimestamp(150_000 - 1);
         TestsHelper.checkException(() -> exerciseService.createExercise(newExercise), ClientErrorException.class);
         verify(userDao, times(3)).findById(1L);
-        verify(exerciseDao, times(3)).findForUser(1L, null, null, any());
+        verify(exerciseDao, times(3)).findForUser(eq(1L), any(), anyLong(), anyLong());
 
-        newExercise.setStartTimestamp(13000);
+        newExercise.setStartTimestamp(150_000);
+        exerciseService.createExercise(newExercise);
         verify(userDao, times(4)).findById(1L);
-        verify(exerciseDao, times(4)).findForUser(1L, null, null, any());
+        verify(exerciseDao, times(4)).findForUser(eq(1L), any(), anyLong(), anyLong());
         verify(exerciseDao, times(2)).create(newExercise);
     }
 }

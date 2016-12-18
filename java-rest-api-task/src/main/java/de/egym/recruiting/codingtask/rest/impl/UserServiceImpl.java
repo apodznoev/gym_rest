@@ -87,7 +87,7 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    private void validateBirthday(Date birthday) throws BadRequestException {
+    private static void validateBirthday(Date birthday) throws BadRequestException {
         if (birthday == null)
             throw new BadRequestException("Birthday is not provided");
 

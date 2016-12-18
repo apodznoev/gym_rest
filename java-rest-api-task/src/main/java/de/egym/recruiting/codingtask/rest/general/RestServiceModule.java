@@ -1,8 +1,10 @@
 package de.egym.recruiting.codingtask.rest.general;
 
 import com.google.inject.AbstractModule;
+import de.egym.recruiting.codingtask.rest.AchievementsService;
 import de.egym.recruiting.codingtask.rest.ExerciseService;
 import de.egym.recruiting.codingtask.rest.UserService;
+import de.egym.recruiting.codingtask.rest.impl.AchievementsServiceImpl;
 import de.egym.recruiting.codingtask.rest.impl.ExerciseServiceImpl;
 import de.egym.recruiting.codingtask.rest.impl.UserServiceImpl;
 
@@ -12,6 +14,7 @@ public class RestServiceModule extends AbstractModule {
 	protected void configure() {
 		bind(UserService.class).to(UserServiceImpl.class);
 		bind(ExerciseService.class).to(ExerciseServiceImpl.class);
+		bind(AchievementsService.class).to(AchievementsServiceImpl.class);
 		bind(ObjectMapperProvider.class);
 		bind(RestExceptionMapper.class);
 	}

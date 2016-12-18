@@ -3,10 +3,10 @@ package de.egym.recruiting.codingtask.rest.impl;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import de.egym.recruiting.codingtask.jpa.dao.ExerciseDao;
+import de.egym.recruiting.codingtask.jpa.dao.UserDao;
 import de.egym.recruiting.codingtask.jpa.domain.Exercise;
 import de.egym.recruiting.codingtask.jpa.domain.User;
 import de.egym.recruiting.codingtask.rest.ExerciseService;
-import de.egym.recruiting.codingtask.rest.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,13 +26,17 @@ import java.util.List;
 public class ExerciseServiceImpl implements ExerciseService {
     private static final Logger log = LoggerFactory.getLogger(ExerciseServiceImpl.class);
 
-    private final UserService userService;
+    private final UserDao userDao;
     private final ExerciseDao exerciseDao;
+    private final AchievementsServiceImpl achievementsService;
 
     @Inject
-    ExerciseServiceImpl(final UserService userService, final ExerciseDao exerciseDao) {
-        this.userService = userService;
+    ExerciseServiceImpl(final UserDao userDao,
+                        final ExerciseDao exerciseDao,
+                        final AchievementsServiceImpl achievementsService) {
         this.exerciseDao = exerciseDao;
+        this.userDao = userDao;
+        this.achievementsService = achievementsService;
     }
 
     @Nonnull
@@ -49,7 +53,7 @@ public class ExerciseServiceImpl implements ExerciseService {
         log.debug("Listing all the exercises for user: {}, type:{}, from: {}, till: {}.",
                 userId, type, fromInclusive, tillExclusive);
 
-        if (userService.getUserById(userId) == null)
+        if (userDao.findById(userId) == null)
             throw new NotFoundException("User with given id not found");
 
         return exerciseDao.findForUser(userId, type, fromInclusive, tillExclusive);
@@ -72,7 +76,9 @@ public class ExerciseServiceImpl implements ExerciseService {
         log.debug("Creating an exercise: {}.", newExercise);
         newExercise.setId(null);
         validateExercise(newExercise);
-        return exerciseDao.create(newExercise);
+        Exercise exercise = exerciseDao.create(newExercise);
+        achievementsService.handleExercise(exercise);
+        return exercise;
     }
 
     private void validateExercise(Exercise newExercise) throws BadRequestException {
@@ -103,7 +109,7 @@ public class ExerciseServiceImpl implements ExerciseService {
             throw new BadRequestException("User id is not specified");
 
         long userId = user.getId();
-        User found = userService.getUserById(userId);
+        User found = userDao.findById(userId);
         if (found == null)
             throw new NotFoundException("User with given id not exists: " + userId);
 
@@ -112,10 +118,10 @@ public class ExerciseServiceImpl implements ExerciseService {
 
     private void validateExerciseConflicts(Exercise newExercise) throws ClientErrorException {
         long end = newExercise.getEndTimestamp();
-        List<Exercise> exercisesBeforeGivenEnded = exerciseDao.findForUser(newExercise.getUser().getId(), null, null, end + 1);
+        List<Exercise> exercisesBeforeGivenEnded = exerciseDao.findForUser(newExercise.getUser().getId(), null, null, end);
         Exercise conflict = exercisesBeforeGivenEnded
                 .stream()
-                .filter(exercise -> exercise.getEndTimestamp() >= newExercise.getStartTimestamp())
+                .filter(exercise -> exercise.getEndTimestamp() > newExercise.getStartTimestamp())
                 .findAny()
                 .orElse(null);
 
